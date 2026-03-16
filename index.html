@@ -21,9 +21,12 @@
         </header>
 
         <main>
-            <div class="search-wrapper">
-                <input type="text" id="browser-input" placeholder="Введіть адресу вузла (index, wiecos, news)...">
-                <button id="go-btn">Перейти</button>
+            <div class="search-container">
+                <div class="search-wrapper">
+                    <input type="text" id="browser-input" placeholder="Пошук або 'create назва'..." autocomplete="off">
+                    <button id="go-btn">Перейти</button>
+                    <div id="suggestions" class="hidden"></div>
+                </div>
             </div>
             
             <div id="content-display" class="card"></div>
@@ -32,7 +35,7 @@
 
     <div id="devtools" class="devtools-hidden">
         <div class="devtools-tabs">
-            <button onclick="showTab('elements')">Elements (Editor)</button>
+            <button onclick="showTab('elements')">Elements</button>
             <button onclick="showTab('console')">Console</button>
             <button class="close-btn" onclick="toggleDevTools()">×</button>
         </div>
