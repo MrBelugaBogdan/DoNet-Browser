@@ -1,14 +1,51 @@
-<div id="devtools" class="devtools-hidden">
-    <div class="devtools-tabs">
-        <button onclick="showTab('elements')">Elements</button>
-        <button onclick="showTab('console')">Console</button>
-        <button class="close-btn" onclick="toggleDevTools()">×</button>
-    </div>
-    <div id="devtools-content">
-        <pre id="code-inspector"></pre> <div id="console-log" style="display:none;"></div>
-    </div>
-</div>
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DoNet Catalyst OS</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
 
-<footer style="margin-top: 20px;">
-    <button onclick="toggleDevTools()" style="font-size: 12px; opacity: 0.6;">Проглянути код (DevTools)</button>
-</footer>
+    <div id="context-menu" class="hidden">
+        <div class="menu-item" onclick="alert('Текст скопійовано в буфер DoNet')">Копіювати</div>
+        <div class="menu-item" onclick="toggleDevTools()">Посмотреть код сторінки</div>
+        <hr>
+        <div class="menu-item" onclick="location.reload()">Перезавантажити сторінку</div>
+    </div>
+
+    <div class="app-container">
+        <header>
+            <div class="logo">DoNet <span>Catalyst</span></div>
+            <div class="system-info">Node: WOKS_1A | Status: <span class="online">Online</span></div>
+        </header>
+
+        <main>
+            <div class="search-wrapper">
+                <input type="text" id="browser-input" placeholder="Введіть адресу сайту або команду...">
+                <button id="go-btn">Перейти</button>
+            </div>
+            
+            <div id="content-display" class="card">
+                <h2>Вітаємо, розробнику!</h2>
+                <p>Ваша система готова. Спробуйте ввести <b>wiecos</b> або <b>news</b>.</p>
+            </div>
+        </main>
+    </div>
+
+    <div id="devtools" class="devtools-hidden">
+        <div class="devtools-tabs">
+            <button onclick="showTab('elements')">Elements</button>
+            <button onclick="showTab('console')">Console</button>
+            <button class="close-btn" onclick="toggleDevTools()">×</button>
+        </div>
+        <div id="devtools-content">
+            <pre id="code-inspector" style="display: block;"></pre>
+            <div id="console-log" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
