@@ -5,41 +5,47 @@ const codeInspector = document.getElementById('code-inspector');
 const consoleLog = document.getElementById('console-log');
 const contextMenu = document.getElementById('context-menu');
 
-// Наша майбутня "Мова Сайтів" (База даних)
+// 1. БАЗА ДАНИХ (Твій контент на CatalystML)
 const DONET_PAGES = {
-    'wiecos': '[title]Wiecos 3D Engine[/title][box]Вузол активний. Система рендерингу підключена.[/box][button]Запустити Світ[/button]',
-    'news': '[title]Центр Новин DoNet[/title][text]Браузер Catalyst перейшов на модульну систему файлів.[/text][text]Розробник підключив DevTools.[/text]',
-    'home': '[title]Головна[/title][text]Це ваш домашній вузол у мережі DoNet.[/text]'
+    'index': '[title]DoNet Catalyst[/title][box][text]Вітаємо у вашому власному інтернеті. Тут діють ваші правила.[/text][/box][text]Швидкий доступ до вузлів:[/text][button]wiecos[/button][button]news[/button]',
+    'wiecos': '[title]Wiecos 3D Engine[/title][box][color=blue]Статус системи: Очікування команди...[/color][/box][button]index[/button]',
+    'news': '[title]Новини Мережі[/title][text]Сьогодні запущено власну мову розмітки CatalystML![/text][text]Додано функцію "Посмотреть код".[/text][button]index[/button]'
 };
 
-// 1. Функція перетворення нашої мови в HTML
+// 2. ПАРЗЕР (Перетворює CatalystML в HTML)
 function parseDNL(code) {
     let html = code;
     html = html.replace(/\[title\](.*?)\[\/title\]/g, '<h1 style="color:#1a73e8">$1</h1>');
     html = html.replace(/\[text\](.*?)\[\/text\]/g, '<p>$1</p>');
-    html = html.replace(/\[box\](.*?)\[\/box\]/g, '<div style="border:1px solid #ddd; padding:10px; border-radius:5px">$1</div>');
-    html = html.replace(/\[button\](.*?)\[\/button\]/g, '<button style="margin-top:10px; padding:10px; cursor:pointer">$1</button>');
+    html = html.replace(/\[box\](.*?)\[\/box\]/g, '<div class="custom-box">$1</div>');
+    html = html.replace(/\[button\](.*?)\[\/button\]/g, '<button class="custom-btn" onclick="input.value=\'$1\'; processInput();">$1</button>');
+    html = html.replace(/\[color=(.*?)\](.*?)\[\/color\]/g, '<span style="color:$1">$2</span>');
     return html;
 }
 
-// 2. Логіка пошуку та переходу
+// 3. ФУНКЦІЯ ПЕРЕХОДУ
 function processInput() {
     const val = input.value.trim().toLowerCase();
-    logToConsole(`Запит до вузла: ${val}`);
+    logToConsole(`Запит: ${val}`);
 
     if (DONET_PAGES[val]) {
-        const rawCode = DONET_PAGES[val];
-        display.innerHTML = parseDNL(rawCode);
-        codeInspector.innerText = rawCode; // Показуємо код у вкладці Elements
-        logToConsole(`Сторінку ${val} успішно завантажено.`);
+        const raw = DONET_PAGES[val];
+        display.innerHTML = parseDNL(raw);
+        codeInspector.innerText = raw; // Виводимо код в інспектор
     } else {
-        display.innerHTML = `<h3>Помилка 404</h3><p>Вузол "${val}" не знайдено в мережі.</p>`;
-        codeInspector.innerText = "Error: 404 Page Not Found";
-        logToConsole(`Помилка: ${val} відсутній.`, "error");
+        display.innerHTML = `<h1>404</h1><p>Вузол ${val} не знайдено.</p>`;
+        codeInspector.innerText = "Error: 404";
     }
 }
 
-// 3. Контекстне меню
+// 4. ЖИВИЙ РЕДАКТОР (Зміна коду в реальному часі)
+codeInspector.addEventListener('input', () => {
+    const updatedCode = codeInspector.innerText;
+    display.innerHTML = parseDNL(updatedCode);
+    logToConsole("Код сторінки змінено в Inspector");
+});
+
+// 5. КОНТЕКСТНЕ МЕНЮ ТА DEVTOOLS
 document.addEventListener('contextmenu', (e) => {
     e.preventDefault();
     contextMenu.style.top = `${e.pageY}px`;
@@ -49,29 +55,27 @@ document.addEventListener('contextmenu', (e) => {
 
 document.addEventListener('click', () => contextMenu.classList.add('hidden'));
 
-// 4. DevTools
 function toggleDevTools() {
     document.getElementById('devtools').classList.toggle('devtools-hidden');
+    showTab('elements');
 }
 
 function showTab(tab) {
-    if (tab === 'elements') {
-        codeInspector.style.display = 'block';
-        consoleLog.style.display = 'none';
-    } else {
-        codeInspector.style.display = 'none';
-        consoleLog.style.display = 'block';
-    }
+    codeInspector.style.display = (tab === 'elements') ? 'block' : 'none';
+    consoleLog.style.display = (tab === 'console') ? 'block' : 'none';
 }
 
 function logToConsole(msg) {
-    const div = document.createElement('div');
-    div.innerText = `> ${msg}`;
-    consoleLog.appendChild(div);
+    const d = new Date();
+    consoleLog.innerHTML += `<div>[${d.toLocaleTimeString()}] > ${msg}</div>`;
 }
 
-// Слухачі подій
+// ЗАПУСК ГОЛОВНОЇ СТОРІНКИ
+window.onload = () => {
+    input.value = 'index';
+    processInput();
+    logToConsole("Система Catalyst Ready.");
+};
+
 btn.addEventListener('click', processInput);
 input.addEventListener('keypress', (e) => { if (e.key === 'Enter') processInput(); });
-
-logToConsole("Система Catalyst завантажена. Готовність 100%.");
