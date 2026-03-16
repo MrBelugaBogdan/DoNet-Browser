@@ -1,34 +1,14 @@
-<!DOCTYPE html>
-<html lang="uk">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DoNet Catalyst</title>
-    <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
-    <div class="app-container">
-        <header>
-            <div class="logo">DoNet <span>Catalyst</span></div>
-            <nav>
-                <span class="status-dot"></span> Online
-            </nav>
-        </header>
-
-        <main>
-            <div class="search-wrapper">
-                <input type="text" id="browser-input" placeholder="Пошук в DoNet або введення команди...">
-                <button id="go-btn">Go</button>
-            </div>
-            
-            <div id="content-display" class="card">
-                <div class="welcome-text">
-                    <h2>Вітаємо в майбутньому</h2>
-                    <p>Введіть назву вузла або команду для початку роботи.</p>
-                </div>
-            </div>
-        </main>
+<div id="devtools" class="devtools-hidden">
+    <div class="devtools-tabs">
+        <button onclick="showTab('elements')">Elements</button>
+        <button onclick="showTab('console')">Console</button>
+        <button class="close-btn" onclick="toggleDevTools()">×</button>
     </div>
-    <script src="js/main.js"></script>
-</body>
-</html>
+    <div id="devtools-content">
+        <pre id="code-inspector"></pre> <div id="console-log" style="display:none;"></div>
+    </div>
+</div>
+
+<footer style="margin-top: 20px;">
+    <button onclick="toggleDevTools()" style="font-size: 12px; opacity: 0.6;">Проглянути код (DevTools)</button>
+</footer>
