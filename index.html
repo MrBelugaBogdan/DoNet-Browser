@@ -9,39 +9,35 @@
 <body>
 
     <div id="context-menu" class="hidden">
-        <div class="menu-item" onclick="alert('Текст скопійовано в буфер DoNet')">Копіювати</div>
         <div class="menu-item" onclick="toggleDevTools()">Посмотреть код сторінки</div>
         <hr>
-        <div class="menu-item" onclick="location.reload()">Перезавантажити сторінку</div>
+        <div class="menu-item" onclick="location.reload()">Перезавантажити</div>
     </div>
 
     <div class="app-container">
         <header>
             <div class="logo">DoNet <span>Catalyst</span></div>
-            <div class="system-info">Node: WOKS_1A | Status: <span class="online">Online</span></div>
+            <div class="system-info">Node: WOKS_1A | <span class="online">Active</span></div>
         </header>
 
         <main>
             <div class="search-wrapper">
-                <input type="text" id="browser-input" placeholder="Введіть адресу сайту або команду...">
+                <input type="text" id="browser-input" placeholder="Введіть адресу вузла (index, wiecos, news)...">
                 <button id="go-btn">Перейти</button>
             </div>
             
-            <div id="content-display" class="card">
-                <h2>Вітаємо, розробнику!</h2>
-                <p>Ваша система готова. Спробуйте ввести <b>wiecos</b> або <b>news</b>.</p>
-            </div>
+            <div id="content-display" class="card"></div>
         </main>
     </div>
 
     <div id="devtools" class="devtools-hidden">
         <div class="devtools-tabs">
-            <button onclick="showTab('elements')">Elements</button>
+            <button onclick="showTab('elements')">Elements (Editor)</button>
             <button onclick="showTab('console')">Console</button>
             <button class="close-btn" onclick="toggleDevTools()">×</button>
         </div>
         <div id="devtools-content">
-            <pre id="code-inspector" style="display: block;"></pre>
+            <pre id="code-inspector" contentEditable="true" spellcheck="false"></pre>
             <div id="console-log" style="display: none;"></div>
         </div>
     </div>
