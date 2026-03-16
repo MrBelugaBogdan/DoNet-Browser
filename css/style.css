@@ -1,5 +1,28 @@
 :root {
-    --primary: #1a73e8; /* Синій як у Google */
+    --primary: #1a73e8; /* #devtools {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 300px;
+    background: #1e1e1e;
+    color: #00ff00; /* Хакерський зелений для консолі */
+    font-family: 'Courier New', monospace;
+    border-top: 2px solid #333;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.devtools-hidden { transform: translateY(100%); }
+
+.devtools-tabs { border-bottom: 1px solid #444; padding-bottom: 5px; margin-bottom: 10px; }
+.devtools-tabs button { background: none; border: none; color: #aaa; cursor: pointer; margin-right: 15px; }
+.devtools-tabs button:hover { color: white; }
+
+#code-inspector { color: #ce9178; white-space: pre-wrap; } /* Колір для тегів */
+#console-log { color: #dcdcdc; overflow-y: auto; height: 200px; }Синій як у Google */
     --bg: #f8f9fa;
     --card-bg: #ffffff;
     --text: #202124;
