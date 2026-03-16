@@ -1,90 +1,47 @@
 :root {
     --primary: #1a73e8;
     --bg: #f1f3f4;
-    --dark: #202124;
+    --card-bg: #ffffff;
     --dev-bg: #1e1e1e;
-    --dev-text: #00ff41;
 }
 
 body {
     margin: 0;
-    font-family: 'Segoe UI', Tahoma, sans-serif;
+    font-family: 'Segoe UI', sans-serif;
     background-color: var(--bg);
-    overflow: hidden; /* Щоб не було зайвих смуг прокрутки */
+    overflow: hidden;
 }
 
-/* Контейнер додатку */
-.app-container {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 20px;
-    height: 100vh;
-}
+.app-container { max-width: 1000px; margin: 0 auto; padding: 20px; height: 100vh; }
 
-header {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px solid #ccc;
-}
+header { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #ddd; }
+.logo { font-size: 24px; font-weight: bold; color: var(--primary); }
+.online { color: #28a745; }
 
-.logo { font-size: 22px; font-weight: bold; color: var(--primary); }
-.online { color: #28a745; font-weight: bold; }
-
-/* Пошук */
 .search-wrapper {
-    display: flex;
-    background: white;
-    padding: 8px 15px;
-    border-radius: 24px;
-    box-shadow: 0 1px 6px rgba(32,33,36,0.28);
-    margin: 30px 0;
+    display: flex; background: white; padding: 10px 20px;
+    border-radius: 30px; box-shadow: 0 1px 6px rgba(32,33,36,0.28); margin: 30px 0;
 }
 
 input { flex: 1; border: none; outline: none; font-size: 16px; }
-button#go-btn { background: var(--primary); color: white; border: none; padding: 8px 20px; border-radius: 18px; cursor: pointer; }
+button#go-btn { background: var(--primary); color: white; border: none; padding: 10px 25px; border-radius: 20px; cursor: pointer; }
 
-/* Картка контенту */
-.card {
-    background: white;
-    padding: 25px;
-    border-radius: 8px;
-    min-height: 300px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
+.card { background: white; padding: 30px; border-radius: 12px; min-height: 400px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow-y: auto; }
 
-/* Контекстне меню */
-#context-menu {
-    position: absolute;
-    background: white;
-    border: 1px solid #ccc;
-    box-shadow: 2px 4px 10px rgba(0,0,0,0.2);
-    border-radius: 4px;
-    padding: 5px 0;
-    z-index: 10000;
-    width: 220px;
-}
+/* Стилі для CatalystML */
+.custom-box { border: 2px solid #eee; padding: 15px; border-radius: 10px; margin: 10px 0; background: #fafafa; }
+.custom-btn { background: #e8f0fe; border: 1px solid var(--primary); color: var(--primary); padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-right: 5px; }
+
+/* DevTools & Context Menu */
+#context-menu { position: absolute; background: white; border: 1px solid #ccc; box-shadow: 2px 4px 10px rgba(0,0,0,0.2); border-radius: 5px; z-index: 10000; width: 200px; padding: 5px 0; }
+.menu-item { padding: 10px 20px; cursor: pointer; font-size: 14px; }
+.menu-item:hover { background: #f1f1f1; }
 .hidden { display: none; }
-.menu-item { padding: 8px 20px; cursor: pointer; font-size: 14px; }
-.menu-item:hover { background: #eee; }
 
-/* DevTools */
-#devtools {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    height: 350px;
-    background: var(--dev-bg);
-    color: #ccc;
-    font-family: 'Consolas', monospace;
-    z-index: 9999;
-    transition: 0.3s;
-    border-top: 2px solid #444;
-}
+#devtools { position: fixed; bottom: 0; width: 100%; height: 350px; background: var(--dev-bg); color: #ccc; font-family: 'Consolas', monospace; z-index: 9999; border-top: 3px solid #333; transition: 0.3s; }
 .devtools-hidden { transform: translateY(100%); }
-.devtools-tabs { background: #333; padding: 5px; }
-.devtools-tabs button { color: #aaa; background: none; border: none; padding: 5px 15px; cursor: pointer; }
-.devtools-tabs button:hover { color: white; }
-#devtools-content { padding: 15px; overflow-y: auto; height: 280px; }
-#code-inspector { color: #ce9178; margin: 0; }
-.close-btn { float: right; color: red !important; font-weight: bold; }
+.devtools-tabs { background: #2d2d2d; padding: 5px; }
+.devtools-tabs button { color: #999; background: none; border: none; padding: 5px 15px; cursor: pointer; }
+#code-inspector { color: #ce9178; outline: none; padding: 15px; margin: 0; white-space: pre-wrap; }
+#console-log { padding: 15px; color: #00ff41; }
+.close-btn { float: right; color: #ff5f56 !important; font-size: 20px; }
