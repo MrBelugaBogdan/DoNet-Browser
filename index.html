@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DoNet Catalyst OS</title>
+    <title>DoNet Catalyst OS | Cloud Edition</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -16,8 +17,8 @@
 
     <div class="app-container">
         <header>
-            <div class="logo">DoNet <span>Catalyst</span></div>
-            <div class="system-info">Node: WOKS_1A | <span class="online">Active</span></div>
+            <div class="logo">DoNet <span>Catalyst Cloud</span></div>
+            <div class="system-info">Server: Supabase DB | Status: <span id="db-status">Connecting...</span></div>
         </header>
 
         <main>
@@ -29,7 +30,9 @@
                 </div>
             </div>
             
-            <div id="content-display" class="card"></div>
+            <div id="content-display" class="card">
+                <h2>Завантаження мережі...</h2>
+            </div>
         </main>
     </div>
 
