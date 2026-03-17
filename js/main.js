@@ -1,6 +1,6 @@
 // --- НАЛАШТУВАННЯ ЗАЛІЗА (ВСТАВ СВОЄ) ---
-const SUPABASE_URL = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnYXRxbWplaW91ZXFodmdlaGxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3NTQwNDgsImV4cCI6MjA4OTMzMDA0OH0.LPgm0A2YVDp5MUENQJYhDmCa3IRtEhjCXsvCwQLjSO4';
-const SUPABASE_KEY = 'https://tgatqmjeioueqhvgehlm.supabase.co';
+const SUPABASE_URL = 'https://tgatqmjeioueqhvgehlm.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnYXRxbWplaW91ZXFodmdlaGxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3NTQwNDgsImV4cCI6MjA4OTMzMDA0OH0.LPgm0A2YVDp5MUENQJYhDmCa3IRtEhjCXsvCwQLjSO4';
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const input = document.getElementById('browser-input');
