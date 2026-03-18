@@ -3,35 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DoNet Catalyst OS | Cloud Edition</title>
+    <title>DoNet Catalyst | Global Cloud Search</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
     <div id="context-menu" class="hidden">
-        <div class="menu-item" onclick="toggleDevTools()">Посмотреть код сторінки</div>
-        <hr>
-        <div class="menu-item" onclick="location.reload()">Перезавантажити</div>
+        <div class="menu-item" onclick="toggleDevTools()">Подивитись код (Elements)</div>
+        <div class="menu-item" onclick="location.reload()">Оновити сторінку</div>
     </div>
 
     <div class="app-container">
         <header>
-            <div class="logo">DoNet <span>Catalyst Cloud</span></div>
-            <div class="system-info">Server: Supabase DB | Status: <span id="db-status">Connecting...</span></div>
+            <div class="logo" onclick="location.reload()">DoNet <span>Search</span></div>
+            <div id="status-bar">Network: <span id="db-status">Connecting...</span></div>
         </header>
 
         <main>
-            <div class="search-container">
+            <div class="search-box">
                 <div class="search-wrapper">
-                    <input type="text" id="browser-input" placeholder="Пошук або 'create назва'..." autocomplete="off">
-                    <button id="go-btn">Перейти</button>
-                    <div id="suggestions" class="hidden"></div>
+                    <input type="text" id="browser-input" placeholder="Шукайте у всесвіті DoNet..." autocomplete="off">
+                    <button id="go-btn">Пошук</button>
                 </div>
             </div>
             
-            <div id="content-display" class="card">
-                <h2>Завантаження мережі...</h2>
+            <div id="content-display">
+                <div class="welcome-screen">
+                    <h2>Вітаємо в автономній мережі!</h2>
+                    <p>Введіть назву сайту або скористайтеся пошуком.</p>
+                </div>
             </div>
         </main>
     </div>
@@ -40,11 +41,23 @@
         <div class="devtools-tabs">
             <button onclick="showTab('elements')">Elements</button>
             <button onclick="showTab('console')">Console</button>
+            <button onclick="showTab('admin')">Створити сайт (Admin)</button>
             <button class="close-btn" onclick="toggleDevTools()">×</button>
         </div>
         <div id="devtools-content">
             <pre id="code-inspector" contentEditable="true" spellcheck="false"></pre>
+            
             <div id="console-log" style="display: none;"></div>
+            
+            <div id="admin-panel" style="display: none; padding: 20px;">
+                <h3>Реєстрація нового вузла в мережі</h3>
+                <input type="text" id="adm-name" placeholder="id-сайту (наприклад: netpedia)">
+                <input type="text" id="adm-title" placeholder="Заголовок для пошуку">
+                <textarea id="adm-desc" placeholder="Короткий опис"></textarea>
+                <p>Виберіть іконку:</p>
+                <input type="file" id="adm-file" accept="image/*">
+                <button onclick="publishNewSite()" style="margin-top:10px; padding:10px; cursor:pointer;">Запустити в хмару</button>
+            </div>
         </div>
     </div>
 
