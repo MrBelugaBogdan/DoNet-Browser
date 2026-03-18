@@ -1,131 +1,142 @@
-// --- НАЛАШТУВАННЯ ЗАЛІЗА (ВСТАВ СВОЄ) ---
 const SUPABASE_URL = 'https://tgatqmjeioueqhvgehlm.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnYXRxbWplaW91ZXFodmdlaGxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3NTQwNDgsImV4cCI6MjA4OTMzMDA0OH0.LPgm0A2YVDp5MUENQJYhDmCa3IRtEhjCXsvCwQLjSO4';
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const input = document.getElementById('browser-input');
-const btn = document.getElementById('go-btn');
 const display = document.getElementById('content-display');
 const codeInspector = document.getElementById('code-inspector');
 const consoleLog = document.getElementById('console-log');
-const suggestionsBox = document.getElementById('suggestions');
+const adminPanel = document.getElementById('admin-panel');
 const dbStatus = document.getElementById('db-status');
 
-// 1. ПАРЗЕР (Хмарна версія)
+// 1. ПАРЗЕР
 function parseDNL(code) {
-    if (!code) return "Порожня сторінка";
+    if(!code) return "";
     let html = code;
     html = html.replace(/\[title\](.*?)\[\/title\]/gs, '<h1 style="color:#1a73e8">$1</h1>');
-    html = html.replace(/\[text\](.*?)\[\/text\]/gs, '<p>$1</p>');
     html = html.replace(/\[box\](.*?)\[\/box\]/gs, '<div class="custom-box">$1</div>');
-    html = html.replace(/\[button\](.*?)\[\/button\]/gs, '<button class="custom-btn" onclick="document.getElementById(\'browser-input\').value=\'$1\'; processInput();">$1</button>');
-    html = html.replace(/\[color=(.*?)\](.*?)\[\/color\]/gs, '<span style="color:$1">$2</span>');
+    html = html.replace(/\[text\](.*?)\[\/text\]/gs, '<p>$1</p>');
+    html = html.replace(/\[button\](.*?)\[\/button\]/gs, '<button class="custom-btn" onclick="input.value=\'$1\'; processInput();">$1</button>');
+    html = html.replace(/\[script\](.*?)\[\/script\]/gs, '<script>$1</script>');
     return html;
 }
 
-// 2. ГОЛОВНА ЛОГІКА (ЗВ'ЯЗОК ІЗ ЗАЛІЗОМ)
+// 2. ПОШУК ТА ЗАВАНТАЖЕННЯ
 async function processInput() {
-    let val = input.value.trim().toLowerCase();
-    suggestionsBox.classList.add('hidden');
-    logToConsole(`Запит до бази: ${val}`);
-
-    if (val.startsWith('create ')) {
-        const name = val.replace('create ', '').trim();
-        await createSiteOnServer(name);
-        return;
-    }
-
-    // Запит до таблиці 'sites'
+    const val = input.value.trim().toLowerCase();
+    if(!val) return;
+    
+    logToConsole(`Запит до глобального індексу: ${val}`);
+    
     const { data, error } = await supabaseClient
         .from('sites')
-        .select('content')
-        .eq('name', val)
-        .single();
+        .select('*')
+        .or(`name.ilike.%${val}%,title.ilike.%${val}%,description.ilike.%${val}%`);
 
-    if (data) {
-        display.innerHTML = parseDNL(data.content);
-        codeInspector.innerText = data.content;
-        logToConsole(`Сайт "${val}" успішно завантажено.`);
+    if(data && data.length > 0) {
+        renderSearchList(data);
     } else {
-        display.innerHTML = `<h1>404</h1><p>Вузол "${val}" не знайдено. Створіть його командою "create ${val}"</p>`;
-        logToConsole(`Помилка: сайт ${val} не знайдено.`, "error");
+        display.innerHTML = `<h2>404</h2><p>Вузол "${val}" не знайдено. Відкрийте Admin панель, щоб створити його.</p>`;
     }
 }
 
-// 3. СТВОРЕННЯ НА СЕРВЕРІ
-async function createSiteOnServer(name) {
-    const defaultCode = `[title]Сайт ${name}[/title][box][text]Текст на сервері.[/text][/box]`;
-    const { error } = await supabaseClient
-        .from('sites')
-        .insert([{ name: name, content: defaultCode }]);
+function renderSearchList(results) {
+    let html = `<p style="color:gray; font-size:13px;">Знайдено сайтів: ${results.length}</p>`;
+    results.forEach(site => {
+        html += `
+        <div class="search-result">
+            <div class="res-header">
+                <div class="res-icon">${site.icon ? `<img src="${site.icon}">` : '🌐'}</div>
+                <span class="res-url">dn://${site.name}</span>
+            </div>
+            <h3 class="res-title" onclick="openSite('${site.name}')">${site.title || site.name}</h3>
+            <p class="res-desc">${site.description || 'Опис відсутній...'}</p>
+        </div>`;
+    });
+    display.innerHTML = html;
+}
 
-    if (error) {
-        logToConsole(`Помилка запису: ${error.message}`);
+async function openSite(name) {
+    const { data } = await supabaseClient.from('sites').select('*').eq('name', name).single();
+    if(data) {
+        display.innerHTML = parseDNL(data.content);
+        codeInspector.innerText = data.content;
+        input.value = name;
+        const scripts = display.getElementsByTagName('script');
+        for (let s of scripts) { try { eval(s.innerText); } catch(e) { console.error(e); } }
+    }
+}
+
+// 3. АДМІНКА: ПУБЛІКАЦІЯ З КАРТИНКОЮ
+async function publishNewSite() {
+    const name = document.getElementById('adm-name').value.trim().toLowerCase();
+    const title = document.getElementById('adm-title').value;
+    const desc = document.getElementById('adm-desc').value;
+    const file = document.getElementById('adm-file').files[0];
+
+    if(!name || !file) return alert("Треба назва сайту та іконка!");
+
+    logToConsole(`Завантаження іконки для ${name}...`);
+    
+    // А) Варимо шлях
+    const fileName = `${name}_${Date.now()}.png`;
+    const { data: uploadData, error: uploadError } = await supabaseClient.storage
+        .from('site-assets')
+        .upload(fileName, file);
+
+    if(uploadError) return alert("Помилка Storage: " + uploadError.message);
+
+    // Б) Отримуємо URL
+    const { data: urlData } = supabaseClient.storage.from('site-assets').getPublicUrl(fileName);
+    const iconUrl = urlData.publicUrl;
+
+    // В) Пишемо в таблицю
+    const { error: dbError } = await supabaseClient.from('sites').insert([{
+        name: name,
+        title: title,
+        description: desc,
+        icon: iconUrl,
+        content: `[title]Вітаємо на ${title}![/title][box][text]Тут буде ваш контент.[/text][/box]`
+    }]);
+
+    if(dbError) {
+        logToConsole("Помилка БД: " + dbError.message);
     } else {
-        logToConsole(`Вузол ${name} створено в хмарі!`);
+        logToConsole(`Сайт ${name} успішно опубліковано з іконкою!`);
+        toggleDevTools();
         input.value = name;
         processInput();
     }
 }
 
-// 4. ЖИВЕ ОНОВЛЕННЯ СЕРВЕРА ПРИ РЕДАГУВАННІ
-let saveTimeout;
-codeInspector.addEventListener('input', () => {
-    const updatedCode = codeInspector.innerText;
-    display.innerHTML = parseDNL(updatedCode);
-    
-    // Щоб не "бомбити" сервер кожною буквою, чекаємо 1 секунду після зупинки друку
-    clearTimeout(saveTimeout);
-    saveTimeout = setTimeout(async () => {
-        const currentSite = input.value.trim().toLowerCase();
-        const { error } = await supabaseClient
-            .from('sites')
-            .update({ content: updatedCode })
-            .eq('name', currentSite);
-
-        if (!error) logToConsole(`Хмарне збереження ${currentSite} виконано.`);
-    }, 1000);
-});
-
-// 5. ДОПОМІЖНІ ФУНКЦІЇ
-function logToConsole(msg) {
-    const d = new Date();
-    consoleLog.innerHTML += `<div>[${d.toLocaleTimeString()}] > ${msg}</div>`;
-    consoleLog.scrollTop = consoleLog.scrollHeight;
-}
-
-function toggleDevTools() {
-    document.getElementById('devtools').classList.toggle('devtools-hidden');
-    setTimeout(() => codeInspector.focus(), 100);
-}
+// 4. ІНТЕРФЕЙС
+function toggleDevTools() { document.getElementById('devtools').classList.toggle('devtools-hidden'); }
 
 function showTab(tab) {
     codeInspector.style.display = (tab === 'elements') ? 'block' : 'none';
     consoleLog.style.display = (tab === 'console') ? 'block' : 'none';
+    adminPanel.style.display = (tab === 'admin') ? 'block' : 'none';
 }
 
-// СТАРТ
+function logToConsole(msg) {
+    consoleLog.innerHTML += `<div>> ${msg}</div>`;
+    consoleLog.scrollTop = consoleLog.scrollHeight;
+}
+
 window.onload = async () => {
-    // Перевірка зв'язку
-    const { data, error } = await supabaseClient.from('sites').select('count', { count: 'exact' });
-    if (!error) {
-        dbStatus.innerText = "Online";
-        dbStatus.style.color = "#28a745";
-        input.value = 'index';
-        processInput();
-    } else {
-        dbStatus.innerText = "Error";
-        logToConsole("Не вдалося підключитися до Supabase!");
+    const { error } = await supabaseClient.from('sites').select('count');
+    if(!error) {
+        dbStatus.innerText = "Online"; dbStatus.style.color = "#28a745";
+        input.value = 'index'; processInput();
     }
 };
 
-btn.addEventListener('click', processInput);
-input.addEventListener('keypress', (e) => { if (e.key === 'Enter') processInput(); });
+document.getElementById('go-btn').onclick = processInput;
+input.onkeypress = (e) => { if(e.key === 'Enter') processInput(); };
 document.addEventListener('contextmenu', (e) => {
     e.preventDefault();
-    const menu = document.getElementById('context-menu');
-    menu.style.top = `${e.pageY}px`;
-    menu.style.left = `${e.pageX}px`;
-    menu.classList.remove('hidden');
+    const m = document.getElementById('context-menu');
+    m.style.top = e.pageY+'px'; m.style.left = e.pageX+'px';
+    m.classList.remove('hidden');
 });
-document.addEventListener('click', () => document.getElementById('context-menu').classList.add('hidden'));
+document.onclick = () => document.getElementById('context-menu').classList.add('hidden');
