@@ -1,66 +1,25 @@
-<!DOCTYPE html>
-<html lang="uk">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DoNet Catalyst | Global Cloud Search</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
+<div id="top-bar" style="background: #1a1a1a; padding: 10px; display: flex; gap: 10px; border-bottom: 2px solid #333; align-items: center;">
+    <button onclick="goHome()" style="background: #333; border: 1px solid #555; color: white; padding: 5px 10px; cursor: pointer; border-radius: 5px;">🏠 Home</button>
+    <input type="text" id="address-bar" placeholder="donet://назва-сайту" 
+           style="flex-grow: 1; background: #000; border: 1px solid #00ff00; color: #00ff00; padding: 8px; border-radius: 5px; font-family: monospace;">
+    <button onclick="goDirect()" style="background: #00ff00; color: #000; border: none; padding: 8px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">GO</button>
+</div>
 
-    <div id="context-menu" class="hidden">
-        <div class="menu-item" onclick="toggleDevTools()">Подивитись код (Elements)</div>
-        <div class="menu-item" onclick="location.reload()">Оновити сторінку</div>
+<div id="search-screen" style="text-align: center; padding-top: 50px;">
+    <h1 style="color: #00ff00; font-size: 48px; margin-bottom: 20px;">DoNet <span style="color: white;">Search</span></h1>
+    
+    <div style="max-width: 600px; margin: 0 auto; position: relative;">
+        <input type="text" id="search-input" placeholder="Що хочеш знайти в мережі?" 
+               style="width: 100%; padding: 15px; border-radius: 30px; border: 1px solid #444; background: #222; color: white; font-size: 18px;">
+        <button onclick="startSearch()" style="margin-top: 20px; padding: 10px 30px; border-radius: 20px; border: none; background: #444; color: white; cursor: pointer;">Пошук в DoNet</button>
     </div>
 
-    <div class="app-container">
-        <header>
-            <div class="logo" onclick="location.reload()">DoNet <span>Search</span></div>
-            <div id="status-bar">Network: <span id="db-status">Connecting...</span></div>
-        </header>
-
-        <main>
-            <div class="search-box">
-                <div class="search-wrapper">
-                    <input type="text" id="browser-input" placeholder="Шукайте у всесвіті DoNet..." autocomplete="off">
-                    <button id="go-btn">Пошук</button>
-                </div>
-            </div>
-            
-            <div id="content-display">
-                <div class="welcome-screen">
-                    <h2>Вітаємо в автономній мережі!</h2>
-                    <p>Введіть назву сайту або скористайтеся пошуком.</p>
-                </div>
-            </div>
-        </main>
+    <div id="history-section" style="margin-top: 40px;">
+        <p style="color: #666;">Останні відвідані:</p>
+        <div id="recent-sites" style="display: flex; justify-content: center; gap: 10px; margin-top: 10px;"></div>
     </div>
+</div>
 
-    <div id="devtools" class="devtools-hidden">
-        <div class="devtools-tabs">
-            <button onclick="showTab('elements')">Elements</button>
-            <button onclick="showTab('console')">Console</button>
-            <button onclick="showTab('admin')">Створити сайт (Admin)</button>
-            <button class="close-btn" onclick="toggleDevTools()">×</button>
-        </div>
-        <div id="devtools-content">
-            <pre id="code-inspector" contentEditable="true" spellcheck="false"></pre>
-            
-            <div id="console-log" style="display: none;"></div>
-            
-            <div id="admin-panel" style="display: none; padding: 20px;">
-                <h3>Реєстрація нового вузла в мережі</h3>
-                <input type="text" id="adm-name" placeholder="id-сайту (наприклад: netpedia)">
-                <input type="text" id="adm-title" placeholder="Заголовок для пошуку">
-                <textarea id="adm-desc" placeholder="Короткий опис"></textarea>
-                <p>Виберіть іконку:</p>
-                <input type="file" id="adm-file" accept="image/*">
-                <button onclick="publishNewSite()" style="margin-top:10px; padding:10px; cursor:pointer;">Запустити в хмару</button>
-            </div>
-        </div>
-    </div>
-
-    <script src="js/main.js"></script>
-</body>
-</html>
+<div id="browser-screen" style="display: none; padding: 20px;">
+    <div id="browser-content"></div>
+</div>
