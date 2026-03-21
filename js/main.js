@@ -1,50 +1,106 @@
-async function doNetSearch(query) {
-    const searchScreen = document.getElementById('search-screen');
-    const browserScreen = document.getElementById('browser-screen');
-    const contentArea = document.getElementById('browser-content');
+// Ініціалізація історії з пам'яті браузера
+let navigationHistory = JSON.parse(localStorage.getItem('donet_history')) || [];
 
-    // 1. Спочатку шукаємо ТОЧНИЙ збіг по імені (як адресний рядок)
-    const { data: exactSite, error: exactError } = await supabase
+window.onload = () => {
+    renderHistory();
+    
+    // Обробка Enter для обох полів
+    document.getElementById('address-bar').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') goDirect();
+    });
+    document.getElementById('search-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') startSearch();
+    });
+};
+
+// 1. Прямий перехід по адресному рядку
+async function goDirect() {
+    const address = document.getElementById('address-bar').value.trim().toLowerCase();
+    if (!address) return;
+
+    const siteName = address.replace('donet://', '');
+    
+    const { data: site } = await supabase
         .from('sites')
         .select('*')
-        .eq('name', query.toLowerCase())
+        .eq('name', siteName)
         .single();
 
-    if (exactSite) {
-        // Якщо знайшли точний сайт — летимо на його сервер
-        openSite(exactSite.server_url);
-        return;
+    if (site) {
+        saveToHistory(site.title, site.server_url, site.name);
+        openSite(site.server_url);
+    } else {
+        alert("Помилка 404: Сайт donet://" + siteName + " не знайдено!");
     }
+}
 
-    // 2. Якщо точного сайту нема — вмикаємо режим GOOGLE (Пошук по всій базі)
-    const { data: results, error: searchError } = await supabase
+// 2. Глобальний пошук (як Google)
+async function startSearch() {
+    const query = document.getElementById('search-input').value.trim();
+    if (!query) return;
+
+    const { data: results } = await supabase
         .from('sites')
         .select('*')
         .or(`name.ilike.%${query}%,title.ilike.%${query}%,description.ilike.%${query}%`);
 
-    if (results && results.length > 0) {
-        // Показуємо список знайдених сайтів
-        searchScreen.style.display = 'none';
-        browserScreen.style.display = 'block';
-        
-        let searchHTML = `<h2>Результати пошуку для: "${query}"</h2><hr>`;
-        
-        results.forEach(site => {
-            searchHTML += `
-                <div style="border: 1px solid #444; padding: 15px; margin-bottom: 10px; border-radius: 8px; cursor: pointer;" 
-                     onclick="openSite('${site.server_url}')">
-                    <div style="display: flex; align-items: center;">
-                        <span style="font-size: 24px; margin-right: 10px;">${site.icon || '🌐'}</span>
-                        <strong style="font-size: 20px; color: #00ff00;">${site.title}</strong>
-                    </div>
-                    <p style="margin: 5px 0; color: #aaa;">${site.description || 'Немає опису'}</p>
-                    <small style="color: #666;">Автор: ${site.author || 'Анонім'} | Адреса: donet://${site.name}</small>
-                </div>
-            `;
-        });
-        
-        contentArea.innerHTML = searchHTML;
-    } else {
-        alert("Нічого не знайдено в мережі DoNet! 🌌");
+    showSearchResults(results, query);
+}
+
+// 3. Функція виходу на головну
+function goHome() {
+    document.getElementById('search-screen').style.display = 'block';
+    document.getElementById('browser-screen').style.display = 'none';
+    document.getElementById('address-bar').value = '';
+}
+
+// 4. Робота з історією
+function saveToHistory(title, url, name) {
+    // Видаляємо дублікат, якщо він уже був
+    navigationHistory = navigationHistory.filter(s => s.name !== name);
+    // Додаємо в початок
+    navigationHistory.unshift({ title, url, name });
+    // Залишаємо тільки 5 штук
+    if (navigationHistory.length > 5) navigationHistory.pop();
+    
+    localStorage.setItem('donet_history', JSON.stringify(navigationHistory));
+    renderHistory();
+}
+
+function renderHistory() {
+    const historyDiv = document.getElementById('recent-sites');
+    if (!historyDiv) return;
+    
+    historyDiv.innerHTML = navigationHistory.map(site => `
+        <button onclick="openSite('${site.url}')" 
+                style="background: #222; border: 1px solid #444; color: #00ff00; padding: 5px 15px; border-radius: 15px; cursor: pointer; font-size: 12px;">
+            ${site.title}
+        </button>
+    `).join('');
+}
+
+// 5. Показ результатів пошуку
+function showSearchResults(results, query) {
+    const content = document.getElementById('browser-content');
+    document.getElementById('search-screen').style.display = 'none';
+    document.getElementById('browser-screen').style.display = 'block';
+
+    if (!results || results.length === 0) {
+        content.innerHTML = `<h2>Нічого не знайдено за запитом "${query}"</h2>`;
+        return;
     }
+
+    let html = `<h2>Результати пошуку:</h2><br>`;
+    results.forEach(site => {
+        html += `
+            <div class="card" onclick="openSite('${site.server_url}'); saveToHistory('${site.title}', '${site.server_url}', '${site.name}')" 
+                 style="border: 1px solid #333; padding: 15px; margin-bottom: 15px; border-radius: 10px; cursor: pointer; background: #111;">
+                <span style="font-size: 24px;">${site.icon || '🌐'}</span>
+                <strong style="color: #00ff00; font-size: 20px;">${site.title}</strong>
+                <p style="color: #ccc; margin: 5px 0;">${site.description}</p>
+                <small style="color: #666;">Автор: ${site.author} | donet://${site.name}</small>
+            </div>
+        `;
+    });
+    content.innerHTML = html;
 }
